@@ -415,8 +415,10 @@ static PSDP_OPTION getAttributesList(PML_CONNECTION_CONTEXT ctx, char*urlSafeAdd
 
         // DualSense control extensions (0x5515/0x5516) use a versioned string
         // namespace instead of a capability bit. A host that does not know the
-        // attribute ignores it and never sees either message.
-        if (Ds5OutputExtensionCallback != NULL) {
+        // attribute ignores it and never sees either message, but non-Sunshine
+        // hosts (e.g. Wolf) fail parsing non-integer SDP attributes. Only offer
+        // when the host has declared support for DualSense extensions.
+        if (Ds5OutputExtensionCallback != NULL && ctx->controlContext.ds5ExtensionMask != 0) {
             err |= addAttributeString(&optionHead, DS5EXT_SDP_CLIENT_ATTRIBUTE,
                                       (ListenerCallbacks.ds5HapticsPcm != NULL && Ds5PadAudioOfferMode == 1) ? DS5EXT_SDP_OFFER_PAD_AUDIO :
                                       (ListenerCallbacks.ds5HapticsPcm != NULL && Ds5PadAudioOfferMode == 2) ? DS5EXT_SDP_OFFER_PAD_SPEAKER : DS5EXT_SDP_OFFER);
